@@ -7,7 +7,6 @@ PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}"
 PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni vtk)
 
 if(build)
-
   include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
   PCL_ADD_EXECUTABLE(pcl_test_search_speed "${SUBSYS_NAME}" src/test_search.cpp)
@@ -25,10 +24,9 @@ if(build)
   if(LIBUSB_1_FOUND)
     PCL_ADD_EXECUTABLE(pcl_dinast_grabber "${SUBSYS_NAME}" src/dinast_grabber_example.cpp)
     target_link_libraries(pcl_dinast_grabber pcl_common pcl_visualization pcl_io)
-  endif(LIBUSB_1_FOUND)
+  endif()
 
-  if (VTK_FOUND)
-
+  if(VTK_FOUND)
     include("${VTK_USE_FILE}")
 
     set(incs "include/pcl/${SUBSYS_NAME}/render_views_tesselated_sphere.h")
@@ -52,7 +50,7 @@ if(build)
     PCL_ADD_EXECUTABLE(pcl_pcd_organized_multi_plane_segmentation "${SUBSYS_NAME}" src/pcd_organized_multi_plane_segmentation.cpp)
     target_link_libraries(pcl_pcd_organized_multi_plane_segmentation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_features)
 
-    if (QHULL_FOUND)
+    if(QHULL_FOUND)
         PCL_ADD_EXECUTABLE(pcl_pcd_select_object_plane "${SUBSYS_NAME}" src/pcd_select_object_plane.cpp)
         target_link_libraries(pcl_pcd_select_object_plane pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_features pcl_surface)
     endif()
@@ -72,8 +70,7 @@ if(build)
     PCL_ADD_EXECUTABLE(pcl_stereo_ground_segmentation "${SUBSYS_NAME}" src/stereo_ground_segmentation.cpp)
     target_link_libraries(pcl_stereo_ground_segmentation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_features pcl_stereo)
 
-    if (QT4_FOUND AND VTK_USE_QVTK)
-
+    if(QT4_FOUND AND VTK_USE_QVTK)
       # Manual registration demo
       QT4_WRAP_UI(manual_registration_ui src/manual_registration/manual_registration.ui)
       QT4_WRAP_CPP(manual_registration_moc include/pcl/apps/manual_registration.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
@@ -84,17 +81,14 @@ if(build)
       QT4_WRAP_CPP(pcd_video_player_moc include/pcl/apps/pcd_video_player.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
       PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_pcd_video_player "${SUBSYS_NAME}" ${pcd_video_player_ui} ${pcd_video_player_moc} src/pcd_video_player/pcd_video_player.cpp)
       target_link_libraries(pcl_pcd_video_player pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface ${QVTK_LIBRARY} ${QT_LIBRARIES})
+    endif()
 
-    endif (QT4_FOUND AND VTK_USE_QVTK)
-
-    if (WITH_OPENNI)
-
+    if(WITH_OPENNI)
 #      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_grab_frame "${SUBSYS_NAME}" src/openni_grab_frame.cpp)
 #      target_link_libraries(pcl_openni_grab_frame pcl_common pcl_io pcl_visualization)
 
 #      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_grab_images "${SUBSYS_NAME}" src/openni_grab_images.cpp)
 #      target_link_libraries(pcl_openni_grab_images pcl_common pcl_io pcl_visualization)
-
 
       PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_fast_mesh "${SUBSYS_NAME}" src/openni_fast_mesh.cpp)
       target_link_libraries(pcl_openni_fast_mesh pcl_common pcl_io pcl_visualization pcl_surface)
@@ -108,7 +102,7 @@ if(build)
       if(HAVE_PNG)
         PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_organized_compression "${SUBSYS_NAME}" src/openni_organized_compression.cpp)
         target_link_libraries(pcl_openni_organized_compression pcl_common pcl_io pcl_filters pcl_visualization pcl_octree)
-      endif(HAVE_PNG)
+      endif()
 
       PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_shift_to_depth_conversion "${SUBSYS_NAME}" src/openni_shift_to_depth_conversion.cpp)
       target_link_libraries(pcl_openni_shift_to_depth_conversion pcl_common pcl_visualization)
@@ -146,7 +140,7 @@ if(build)
       PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_face_detector "${SUBSYS_NAME}" src/face_detection//openni_face_detection.cpp src/face_detection//openni_frame_source.cpp)
       target_link_libraries(pcl_openni_face_detector pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree ${VTK_LIBRARIES})
 
-      if (QT4_FOUND AND VTK_USE_QVTK)
+      if(QT4_FOUND AND VTK_USE_QVTK)
         # OpenNI Passthrough application demo
         QT4_WRAP_UI(openni_passthrough_ui src/openni_passthrough.ui)
         QT4_WRAP_CPP(openni_passthrough_moc include/pcl/apps/openni_passthrough.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
@@ -164,10 +158,9 @@ if(build)
 #        QT4_WRAP_CPP(db_proc_moc include/pcl/apps/db_proc.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 #        PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_db_proc "${SUBSYS_NAME}" ${db_proc_ui} ${db_proc_moc} src/db_proc/db_proc.cpp)
 #        target_link_libraries(pcl_db_proc pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface ${QVTK_LIBRARY} ${QT_LIBRARIES})
+      endif()
 
-      endif ()
-
-      if (QHULL_FOUND)
+      if(QHULL_FOUND)
         PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_3d_convex_hull "${SUBSYS_NAME}" src/openni_3d_convex_hull.cpp)
         target_link_libraries(pcl_openni_3d_convex_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
 
@@ -177,12 +170,11 @@ if(build)
         PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_tracking "${SUBSYS_NAME}" src/openni_tracking.cpp)
         target_link_libraries(pcl_openni_tracking pcl_common pcl_io pcl_surface pcl_visualization pcl_filters pcl_features pcl_segmentation pcl_tracking pcl_search)
 
-      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_planar_convex_hull "${SUBSYS_NAME}" src/openni_planar_convex_hull.cpp)
-      target_link_libraries(pcl_openni_planar_convex_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface)
+        PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_planar_convex_hull "${SUBSYS_NAME}" src/openni_planar_convex_hull.cpp)
+        target_link_libraries(pcl_openni_planar_convex_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface)
 
-      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_ni_linemod "${SUBSYS_NAME}" src/ni_linemod.cpp)
-      target_link_libraries(pcl_ni_linemod pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface pcl_search)
-
+        PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_ni_linemod "${SUBSYS_NAME}" src/ni_linemod.cpp)
+        target_link_libraries(pcl_ni_linemod pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface pcl_search)
       endif() # QHULL_FOUND
 
       PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_ni_agast "${SUBSYS_NAME}" src/ni_agast.cpp)
@@ -200,7 +192,6 @@ if(build)
       PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_klt "${SUBSYS_NAME}" src/openni_klt.cpp)
       target_link_libraries(pcl_openni_klt pcl_common pcl_io pcl_visualization pcl_tracking)
     endif() # WITH_OPENNI
-
   endif() # VTK_FOUND
 
   # OpenGL and GLUT
@@ -210,8 +201,8 @@ if(build)
     endif()
     include_directories("${GLUT_INCLUDE_DIR}")
     PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_grabcut_2d "${SUBSYS_NAME}" src/grabcut_2d.cpp)
-    target_link_libraries (pcl_grabcut_2d pcl_common pcl_io pcl_segmentation pcl_search ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES})
-  endif(OPENGL_FOUND AND GLUT_FOUND)
+    target_link_libraries(pcl_grabcut_2d pcl_common pcl_io pcl_segmentation pcl_search ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES})
+  endif()
 
   collect_subproject_directory_names("${CMAKE_CURRENT_SOURCE_DIR}" "CMakeLists.txt" PCL_APPS_MODULES_NAMES PCL_APPS_MODULES_DIRS ${SUBSYS_NAME})
   set(PCL_APPS_MODULES_NAMES_UNSORTED ${PCL_APPS_MODULES_NAMES})
@@ -219,14 +210,14 @@ if(build)
   sort_relative(PCL_APPS_MODULES_NAMES_UNSORTED PCL_APPS_MODULES_NAMES PCL_APPS_MODULES_DIRS)
   foreach(subdir ${PCL_APPS_MODULES_DIRS})
     add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/${subdir}")
-  endforeach(subdir)
+  endforeach()
 
   if(QHULL_FOUND)
       set(incs
-        "include/pcl/${SUBSYS_NAME}/dominant_plane_segmentation.h"
-        "include/pcl/${SUBSYS_NAME}/timer.h"
-        ${incs}
-        )
+          "include/pcl/${SUBSYS_NAME}/dominant_plane_segmentation.h"
+          "include/pcl/${SUBSYS_NAME}/timer.h"
+          ${incs}
+      )
       set(impl_incs "include/pcl/${SUBSYS_NAME}/impl/dominant_plane_segmentation.hpp")
       set(srcs "src/dominant_plane_segmentation.cpp" ${srcs})
   endif()
@@ -238,6 +229,4 @@ if(build)
   # Install include files
   PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})
   PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl" ${impl_incs})
-
-endif(build)
-
+endif()
