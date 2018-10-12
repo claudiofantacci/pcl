@@ -120,7 +120,8 @@ if(build)
     
     set(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
     PCL_ADD_EXECUTABLE("${EXE_NAME}" "${SUBSUBSYS_NAME}" ${cloud_composer_ui} ${cloud_composer_moc} ${srcs} ${resource_srcs} ${item_srcs} ${selector_srcs} ${impl_incs})
-    target_link_libraries("${EXE_NAME}" pcl_common pcl_io pcl_visualization pcl_filters ${QVTK_LIBRARY} ${QT_LIBRARIES})
+
+    target_link_libraries("${EXE_NAME}" pcl_common pcl_io pcl_visualization pcl_filters ${VTK_LIBRARY} ${QVTK_LIBRARY} ${QT_LIBRARIES})
 
     # Install include files
     PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}" ${incs} ${item_incs} ${selector_incs})
@@ -136,63 +137,65 @@ if(build)
 
     set(INTERFACE_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tool_interface/abstract_tool.h")
     set(INTERFACE_SOURCES src/tool_interface/abstract_tool.cpp)
-    
-    QT4_WRAP_CPP(INTERFACE_HEADERS_MOC ${INTERFACE_HEADERS} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
-    PCL_ADD_LIBRARY(pcl_cc_tool_interface "${SUBSUBSYS_NAME}" ${INTERFACE_SOURCES} ${INTERFACE_HEADERS_MOC})
-    target_link_libraries(pcl_cc_tool_interface pcl_common ${QT_LIBRARIES})
 
-    IF(APPLE)
-       SET_TARGET_PROPERTIES(pcl_cc_tool_interface PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
-    ENDIF()
-    
+    QT4_WRAP_CPP(INTERFACE_HEADERS_MOC ${INTERFACE_HEADERS} ${incs} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
+    PCL_ADD_LIBRARY(pcl_cc_tool_interface "${SUBSUBSYS_NAME}" ${INTERFACE_SOURCES} ${INTERFACE_HEADERS_MOC} ${srcs} ${selector_srcs} ${item_srcs})
+    target_include_directories(pcl_cc_tool_interface PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+                                                            "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>")
+    target_link_libraries(pcl_cc_tool_interface pcl_common pcl_visualization pcl_filters ${VTK_LIBRARY} ${QVTK_LIBRARY} ${QT_LIBRARIES})
+
+    if(APPLE)
+      set_target_properties(pcl_cc_tool_interface PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+    endif()
+
     include(ComposerTool.cmake REQUIRED)
-    
-    #FPFH Tool
-    set (FPFH_DEPS pcl_features pcl_kdtree pcl_filters)
-    set (FPFH_SOURCES tools/fpfh_estimation.cpp)
-    set (FPFH_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/fpfh_estimation.h")
-    define_composer_tool (fpfh_estimation "${FPFH_SOURCES}" "${FPFH_HEADERS}" "${FPFH_DEPS}")
-    
-    #Normals Tool
-    set (NORMALS_DEPS pcl_features pcl_kdtree)
-    set (NORMALS_SOURCES tools/normal_estimation.cpp)
-    set (NORMALS_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/normal_estimation.h")
-    define_composer_tool (normal_estimation "${NORMALS_SOURCES}" "${NORMALS_HEADERS}" "${NORMALS_DEPS}")
 
-    #Euclidean Clustering Tool
-    set (EC_DEPS pcl_segmentation pcl_kdtree)
-    set (EC_SOURCES tools/euclidean_clustering.cpp)
-    set (EC_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/euclidean_clustering.h")
-    define_composer_tool (euclidean_clustering "${EC_SOURCES}" "${EC_HEADERS}" "${EC_DEPS}")
-    
-    #Statistical Outlier Removal Tool
-    set (SOR_DEPS pcl_filters)
-    set (SOR_SOURCES tools/statistical_outlier_removal.cpp)
-    set (SOR_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/statistical_outlier_removal.h")
-    define_composer_tool (statistical_outlier_removal "${SOR_SOURCES}" "${SOR_HEADERS}" "${SOR_DEPS}")
-    
-    #Vox Grid Downsample Tool
-    set (VOXDS_DEPS pcl_filters)
-    set (VOXDS_SOURCES tools/voxel_grid_downsample.cpp)
-    set (VOXDS_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/voxel_grid_downsample.h")
-    define_composer_tool (voxel_grid_downsample "${VOXDS_SOURCES}" "${VOXDS_HEADERS}" "${VOXDS_DEPS}")
-    
-     #Organized Segmentation
-    set (OSEG_DEPS pcl_segmentation pcl_kdtree)
-    set (OSEG_SOURCES tools/organized_segmentation.cpp "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/impl/organized_segmentation.hpp")
-    set (OSEG_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/organized_segmentation.h")
-    define_composer_tool (organized_segmentation "${OSEG_SOURCES}" "${OSEG_HEADERS}" "${OSEG_DEPS}")
-    
-        #Sanitize Cloud Tool
-    set (SAN_DEPS pcl_filters)
-    set (SAN_SOURCES tools/sanitize_cloud.cpp)
-    set (SAN_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/sanitize_cloud.h")
-    define_composer_tool (sanitize_cloud "${SAN_SOURCES}" "${SAN_HEADERS}" "${SAN_DEPS}")
-    
-     #Supervoxels
-    set (VSP_DEPS pcl_octree pcl_segmentation)
-    set (VSP_SOURCES tools/supervoxels.cpp "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/impl/supervoxels.hpp")
-    set (VSP_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/supervoxels.h")
-    define_composer_tool (supervoxels "${VSP_SOURCES}" "${VSP_HEADERS}" "${VSP_DEPS}")
+    # #FPFH Tool
+    # set(FPFH_DEPS pcl_features pcl_kdtree pcl_filters)
+    # set(FPFH_SOURCES tools/fpfh_estimation.cpp)
+    # set(FPFH_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/fpfh_estimation.h")
+    # define_composer_tool(fpfh_estimation "${FPFH_SOURCES}" "${FPFH_HEADERS}" "${FPFH_DEPS}")
+
+    # #Normals Tool
+    # set(NORMALS_DEPS pcl_features pcl_kdtree)
+    # set(NORMALS_SOURCES tools/normal_estimation.cpp)
+    # set(NORMALS_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/normal_estimation.h")
+    # define_composer_tool(normal_estimation "${NORMALS_SOURCES}" "${NORMALS_HEADERS}" "${NORMALS_DEPS}")
+    #
+    # #Euclidean Clustering Tool
+    # set(EC_DEPS pcl_segmentation pcl_kdtree)
+    # set(EC_SOURCES tools/euclidean_clustering.cpp)
+    # set(EC_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/euclidean_clustering.h")
+    # define_composer_tool(euclidean_clustering "${EC_SOURCES}" "${EC_HEADERS}" "${EC_DEPS}")
+    #
+    # #Statistical Outlier Removal Tool
+    # set(SOR_DEPS pcl_filters)
+    # set(SOR_SOURCES tools/statistical_outlier_removal.cpp)
+    # set(SOR_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/statistical_outlier_removal.h")
+    # define_composer_tool(statistical_outlier_removal "${SOR_SOURCES}" "${SOR_HEADERS}" "${SOR_DEPS}")
+    #
+    # #Vox Grid Downsample Tool
+    # set(VOXDS_DEPS pcl_filters)
+    # set(VOXDS_SOURCES tools/voxel_grid_downsample.cpp)
+    # set(VOXDS_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/voxel_grid_downsample.h")
+    # define_composer_tool(voxel_grid_downsample "${VOXDS_SOURCES}" "${VOXDS_HEADERS}" "${VOXDS_DEPS}")
+    #
+    # #Organized Segmentation
+    # set(OSEG_DEPS pcl_segmentation pcl_kdtree)
+    # set(OSEG_SOURCES tools/organized_segmentation.cpp "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/impl/organized_segmentation.hpp")
+    # set(OSEG_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/organized_segmentation.h")
+    # define_composer_tool(organized_segmentation "${OSEG_SOURCES}" "${OSEG_HEADERS}" "${OSEG_DEPS}")
+    #
+    # #Sanitize Cloud Tool
+    # set(SAN_DEPS pcl_filters)
+    # set(SAN_SOURCES tools/sanitize_cloud.cpp)
+    # set(SAN_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/sanitize_cloud.h")
+    # define_composer_tool(sanitize_cloud "${SAN_SOURCES}" "${SAN_HEADERS}" "${SAN_DEPS}")
+    #
+    # #Supervoxels
+    # set(VSP_DEPS pcl_octree pcl_segmentation)
+    # set(VSP_SOURCES tools/supervoxels.cpp "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/impl/supervoxels.hpp")
+    # set(VSP_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/supervoxels.h")
+    # define_composer_tool(supervoxels "${VSP_SOURCES}" "${VSP_HEADERS}" "${VSP_DEPS}")
 
 endif(build)
