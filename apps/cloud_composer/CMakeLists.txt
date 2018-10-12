@@ -1,5 +1,5 @@
 #Disable some warnings which are all over Qt headers and make finding error messages hell
-#if(${CMAKE_CXX_FLAGS} MATCHES "-Wconversion") 
+#if(${CMAKE_CXX_FLAGS} MATCHES "-Wconversion")
 #  string(REGEX REPLACE "-Wconversion(.+)" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 #endif()
 
@@ -7,7 +7,7 @@ SET(SUBSUBSYS_NAME cloud_composer)
 SET(SUBSUBSYS_DESC "Cloud Composer - Application for Manipulating Point Clouds")
 SET(SUBSUBSYS_DEPS common io visualization filters apps)
 
-# Find VTK 
+# Find VTK
 if(NOT VTK_FOUND)
   set(DEFAULT AUTO_OFF)
   set(REASON "VTK was not found.")
@@ -36,9 +36,9 @@ elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
 endif(NOT VTK_USE_QVTK)
 
 #Default to not building for now
-if ("${DEFAULT}" STREQUAL "TRUE")
+if("${DEFAULT}" STREQUAL "TRUE")
   set(DEFAULT FALSE)
-endif ("${DEFAULT}" STREQUAL "TRUE")
+endif("${DEFAULT}" STREQUAL "TRUE")
 
 PCL_SUBSUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" "${SUBSUBSYS_DESC}" ${DEFAULT} "${REASON}")
 PCL_SUBSUBSYS_DEPEND(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" DEPS ${SUBSUBSYS_DEPS})
@@ -48,7 +48,7 @@ PCL_ADD_DOC(${SUBSUBSYS_NAME})
 if(build)
 
     include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/include")
-  
+
     #Sources & Headers for main application
     set(incs "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/qt.h"
              "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/cloud_composer.h"
@@ -66,8 +66,8 @@ if(build)
              "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/signal_multiplexer.h"
              "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/merge_selection.h"
              "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/transform_clouds.h")
-          
-    set(srcs src/main.cpp 
+
+    set(srcs src/main.cpp
              src/cloud_composer.cpp
              src/project_model.cpp
              src/cloud_viewer.cpp
@@ -82,42 +82,42 @@ if(build)
              src/merge_selection.cpp
              src/tool_interface/abstract_tool.cpp
              src/transform_clouds.cpp)
-          
+
     set(impl_incs "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/impl/cloud_item.hpp"
                   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/impl/merge_selection.hpp"
                   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/impl/transform_clouds.hpp")
-              
-    #Sources and headers for item types      
+
+    #Sources and headers for item types
     set(item_incs "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/items/cloud_composer_item.h"
                   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/items/cloud_item.h"
                   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/items/normals_item.h"
                   "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/items/fpfh_item.h")
-           
+
     set(item_srcs src/items/cloud_composer_item.cpp
                   src/items/cloud_item.cpp
                   src/items/normals_item.cpp
                   src/items/fpfh_item.cpp)
-                  
+
     #Sources and headers for point selectors
-    set (selector_incs "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/point_selectors/interactor_style_switch.h"
-                       "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/point_selectors/rectangular_frustum_selector.h"
-                       "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/point_selectors/selected_trackball_interactor_style.h"
-                       "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/point_selectors/click_trackball_interactor_style.h")
-                       
-    set (selector_srcs src/point_selectors/interactor_style_switch.cpp
-                       src/point_selectors/selection_event.cpp
-                       src/point_selectors/rectangular_frustum_selector.cpp
-                       src/point_selectors/selected_trackball_interactor_style.cpp
-                       src/point_selectors/click_trackball_interactor_style.cpp
-                       src/point_selectors/manipulation_event.cpp)
-                       
+    set(selector_incs "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/point_selectors/interactor_style_switch.h"
+                      "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/point_selectors/rectangular_frustum_selector.h"
+                      "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/point_selectors/selected_trackball_interactor_style.h"
+                      "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/point_selectors/click_trackball_interactor_style.h")
+
+    set(selector_srcs src/point_selectors/interactor_style_switch.cpp
+                      src/point_selectors/selection_event.cpp
+                      src/point_selectors/rectangular_frustum_selector.cpp
+                      src/point_selectors/selected_trackball_interactor_style.cpp
+                      src/point_selectors/click_trackball_interactor_style.cpp
+                      src/point_selectors/manipulation_event.cpp)
+
     set(uis src/cloud_composer_main_window.ui)
     set(resources resources/resources.qrc)
 
     QT4_WRAP_UI(cloud_composer_ui ${uis})
     QT4_WRAP_CPP(cloud_composer_moc ${incs} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
     QT4_ADD_RESOURCES(resource_srcs ${resources})
-    
+
     set(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
     PCL_ADD_EXECUTABLE("${EXE_NAME}" "${SUBSUBSYS_NAME}" ${cloud_composer_ui} ${cloud_composer_moc} ${srcs} ${resource_srcs} ${item_srcs} ${selector_srcs} ${impl_incs})
 
@@ -126,13 +126,13 @@ if(build)
     # Install include files
     PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}" ${incs} ${item_incs} ${selector_incs})
     PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}/impl" ${impl_incs})
-    
-    PCL_MAKE_PKGCONFIG("${EXE_NAME}" "${SUBSUBSYS_NAME}" "${SUBSYS_DESC}" "" "" "" "" "")
-    
 
-    #TOOL buildING SCRIPTS
+    PCL_MAKE_PKGCONFIG("${EXE_NAME}" "${SUBSUBSYS_NAME}" "${SUBSYS_DESC}" "" "" "" "" "")
+
+
+    #TOOL building SCRIPTS
     #Create subdirectory for plugin libs
-    set (CLOUD_COMPOSER_PLUGIN_DIR "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/cloud_composer_plugins")
+    set(CLOUD_COMPOSER_PLUGIN_DIR "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/cloud_composer_plugins")
     make_directory("${CLOUD_COMPOSER_PLUGIN_DIR}")
 
     set(INTERFACE_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tool_interface/abstract_tool.h")
