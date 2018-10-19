@@ -135,38 +135,41 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     void
-    OutofcoreOctreeBaseMetadata::serializeMetadataToDisk ()
+    OutofcoreOctreeBaseMetadata::serializeMetadataToDisk()
     {
-      // Create JSON object
-      boost::shared_ptr<cJSON> idx (cJSON_CreateObject (), cJSON_Delete);
-  
-      cJSON* name = cJSON_CreateString (tree_name_.c_str ());
-      cJSON* version = cJSON_CreateNumber ( __PCL_OUTOFCORE_VERSION__ );
-      cJSON* pointtype = cJSON_CreateString (point_type_.c_str ());
-      cJSON* lod = cJSON_CreateNumber (static_cast<double> (levels_of_depth_));
+      if (LOD_num_points_.size() > 0)
+      {
+        // Create JSON object
+        boost::shared_ptr<cJSON> idx(cJSON_CreateObject(), cJSON_Delete);
 
-      // cJSON does not allow 64 bit ints.  Have to put the points in a double to
-      // use this api, will allow counts up to 2^52 points to be stored correctly
-      //or split into LSB MSB?
-      std::vector<double> lodPoints_db;
-      lodPoints_db.insert (lodPoints_db.begin (), LOD_num_points_.begin (), LOD_num_points_.end ());
+        cJSON* name = cJSON_CreateString(tree_name_.c_str());
+        cJSON* version = cJSON_CreateNumber(__PCL_OUTOFCORE_VERSION__);
+        cJSON* pointtype = cJSON_CreateString(point_type_.c_str());
+        cJSON* lod = cJSON_CreateNumber(static_cast<double> (levels_of_depth_));
 
-      cJSON* numpts = cJSON_CreateDoubleArray ( &(lodPoints_db.front ()), static_cast<int>(lodPoints_db.size ()));
+        // cJSON does not allow 64 bit ints.  Have to put the points in a double to
+        // use this api, will allow counts up to 2^52 points to be stored correctly
+        // or split into LSB MSB?
+        std::vector<double> lodPoints_db;
+        lodPoints_db.insert(lodPoints_db.begin(), LOD_num_points_.begin(), LOD_num_points_.end());
 
-      cJSON_AddItemToObject (idx.get (), "name", name);
-      cJSON_AddItemToObject (idx.get (), "version", version);
-      cJSON_AddItemToObject (idx.get (), "pointtype", pointtype);
-      cJSON_AddItemToObject (idx.get (), "lod", lod);
-      cJSON_AddItemToObject (idx.get (), "numpts", numpts);
-      cJSON_AddStringToObject(idx.get(), "coord_system", coordinate_system_.c_str());
+        cJSON* numpts = cJSON_CreateDoubleArray(&(lodPoints_db.front()), static_cast<int>(lodPoints_db.size()));
 
-      char* idx_txt = cJSON_Print (idx.get ());
+        cJSON_AddItemToObject(idx.get(), "name", name);
+        cJSON_AddItemToObject(idx.get(), "version", version);
+        cJSON_AddItemToObject(idx.get(), "pointtype", pointtype);
+        cJSON_AddItemToObject(idx.get(), "lod", lod);
+        cJSON_AddItemToObject(idx.get(), "numpts", numpts);
+        cJSON_AddStringToObject(idx.get(), "coord_system", coordinate_system_.c_str());
 
-      std::ofstream f (metadata_filename_.string ().c_str (), std::ios::out | std::ios::trunc);
-      f << idx_txt;
-      f.close ();
+        char* idx_txt = cJSON_Print(idx.get());
 
-      free (idx_txt);
+        std::ofstream f(metadata_filename_.string().c_str(), std::ios::out | std::ios::trunc);
+        f << idx_txt;
+        f.close();
+
+        free(idx_txt);
+      }
     }
 
     ////////////////////////////////////////////////////////////////////////////////
