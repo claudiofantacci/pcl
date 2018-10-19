@@ -52,7 +52,7 @@ namespace pcl
 {
   namespace outofcore
   {
-    OutofcoreOctreeBaseMetadata::OutofcoreOctreeBaseMetadata () 
+    OutofcoreOctreeBaseMetadata::OutofcoreOctreeBaseMetadata ()
       : metadata_filename_ ()
       , outofcore_version_ ()
       , coordinate_system_ ()
@@ -62,10 +62,10 @@ namespace pcl
       , LOD_num_points_ ()
     {
     }
-      
+
     ////////////////////////////////////////////////////////////////////////////////
 
-    OutofcoreOctreeBaseMetadata::OutofcoreOctreeBaseMetadata (const boost::filesystem::path& metadata_filename) 
+    OutofcoreOctreeBaseMetadata::OutofcoreOctreeBaseMetadata (const boost::filesystem::path& metadata_filename)
       : metadata_filename_ (metadata_filename)
       , outofcore_version_ ()
       , coordinate_system_ ()
@@ -77,9 +77,9 @@ namespace pcl
       //read metadata from file and store in fields
       loadMetadataFromDisk ();
     }
-    
+
     ////////////////////////////////////////////////////////////////////////////////
-      
+
     OutofcoreOctreeBaseMetadata::~OutofcoreOctreeBaseMetadata ()
     {
       this->serializeMetadataToDisk ();
@@ -87,7 +87,7 @@ namespace pcl
 
     ////////////////////////////////////////////////////////////////////////////////
 
-    OutofcoreOctreeBaseMetadata::OutofcoreOctreeBaseMetadata (const OutofcoreOctreeBaseMetadata& orig) 
+    OutofcoreOctreeBaseMetadata::OutofcoreOctreeBaseMetadata (const OutofcoreOctreeBaseMetadata& orig)
       : OutofcoreAbstractMetadata ()
       , metadata_filename_ (orig.metadata_filename_)
       , outofcore_version_ (orig.outofcore_version_)
@@ -107,15 +107,15 @@ namespace pcl
     {
       return (outofcore_version_);
     }
-      
+
     ////////////////////////////////////////////////////////////////////////////////
 
-    void 
+    void
     OutofcoreOctreeBaseMetadata::setOutofcoreVersion (const int version)
     {
       outofcore_version_ = version;
     }
-      
+
     ////////////////////////////////////////////////////////////////////////////////
 
     boost::filesystem::path
@@ -123,7 +123,7 @@ namespace pcl
     {
       return (metadata_filename_);
     }
-      
+
     ////////////////////////////////////////////////////////////////////////////////
 
     void
@@ -224,7 +224,7 @@ namespace pcl
       {
         PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::OutofcoreOctreeBaseMetadata::loadMetadataFromDisk] Parse Failure\n");
       }
-      
+
 
       // Get Data
       LOD_num_points_.resize (lod->valueint + 1);
@@ -248,7 +248,7 @@ namespace pcl
       this->setMetadataFilename (path_to_metadata);
       return (this->loadMetadataFromDisk ());
     }
-    
+
     ////////////////////////////////////////////////////////////////////////////////
 
     std::string
@@ -264,7 +264,7 @@ namespace pcl
     {
       this->tree_name_ = name_arg;
     }
-    
+
     ////////////////////////////////////////////////////////////////////////////////
 
     std::string
@@ -274,13 +274,13 @@ namespace pcl
     }
 
     ////////////////////////////////////////////////////////////////////////////////
-    
+
     void
     OutofcoreOctreeBaseMetadata::setPointType (const std::string& point_type_arg)
     {
       this->point_type_ = point_type_arg;
     }
-  
+
     ////////////////////////////////////////////////////////////////////////////////
 
     std::vector<boost::uint64_t>&
@@ -288,7 +288,7 @@ namespace pcl
     {
       return (LOD_num_points_);
     }
-    
+
     ////////////////////////////////////////////////////////////////////////////////
 
     std::vector<boost::uint64_t>
@@ -321,10 +321,10 @@ namespace pcl
     OutofcoreOctreeBaseMetadata::setLODPoints (std::vector<boost::uint64_t>& lod_points_arg)
     {
       assert (this->LOD_num_points_.size () == lod_points_arg.size ());
-      
+
       this->LOD_num_points_ = lod_points_arg;
     }
-    
+
     ////////////////////////////////////////////////////////////////////////////////
 
     void
@@ -337,15 +337,15 @@ namespace pcl
       else
         LOD_num_points_[lod_index_arg] = num_points_arg;
     }
-    
+
     ////////////////////////////////////////////////////////////////////////////////
-    
+
     void
     OutofcoreOctreeBaseMetadata::setCoordinateSystem (const std::string& coord_sys_arg)
     {
       this->coordinate_system_ = coord_sys_arg;
     }
-    
+
     ////////////////////////////////////////////////////////////////////////////////
 
     std::string
@@ -361,13 +361,13 @@ namespace pcl
     {
       this->levels_of_depth_ = depth_arg;
     }
-    
+
     boost::uint64_t
     OutofcoreOctreeBaseMetadata::getDepth () const
     {
       return (levels_of_depth_);
     }
-    
+
     ////////////////////////////////////////////////////////////////////////////////
     //Protected Member Functions
     ////////////////////////////////////////////////////////////////////////////////
@@ -380,7 +380,7 @@ namespace pcl
 
     ////////////////////////////////////////////////////////////////////////////////
 
-    std::ostream& 
+    std::ostream&
     operator<<(std::ostream& os, const OutofcoreOctreeBaseMetadata& metadata_arg)
     {
       (void) metadata_arg;
