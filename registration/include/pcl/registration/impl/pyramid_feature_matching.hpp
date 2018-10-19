@@ -197,9 +197,9 @@ pcl::PyramidFeatureHistogram<PointFeature>::initializeHistogram ()
   {
     std::vector<size_t> bins_per_dimension (nr_dimensions);
     std::vector<float> bin_step (nr_dimensions);
-    for (size_t dim_i = 0; dim_i < nr_dimensions; ++dim_i) 
+    for (size_t dim_i = 0; dim_i < nr_dimensions; ++dim_i)
     {
-      bins_per_dimension[dim_i] = 
+      bins_per_dimension[dim_i] =
         static_cast<size_t> (ceilf ((dimension_range_target_[dim_i].second - dimension_range_target_[dim_i].first) / (powf (2.0f, static_cast<float> (level_i)) * std::sqrt (static_cast<float> (nr_dimensions)))));
       bin_step[dim_i] = powf (2.0f, static_cast<float> (level_i)) * std::sqrt (static_cast<float> (nr_dimensions));
     }
@@ -262,7 +262,12 @@ pcl::PyramidFeatureHistogram<PointFeature>::at (std::vector<float> &feature,
 
   std::vector<size_t> access;
   for (size_t dim_i = 0; dim_i < nr_dimensions; ++dim_i)
-    access.push_back (static_cast<size_t> (floor ((feature[dim_i] - dimension_range_target_[dim_i].first) / hist_levels[level].bin_step[dim_i])));
+  {
+    if (!pcl_isnan(feature[dim_i]))
+      access.push_back (static_cast<size_t>(std::floor((feature[dim_i] - dimension_range_target_[dim_i].first) / hist_levels[level].bin_step[dim_i])));
+    else
+      access.push_back (static_cast<size_t>(0));
+  }
 
   return at (access, level);
 }
