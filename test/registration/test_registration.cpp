@@ -88,6 +88,7 @@ public:
   }
 };
 
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, findFeatureCorrespondences)
 {
@@ -825,48 +826,51 @@ TEST (PCL, SampleConsensusPrerejective)
 TEST (PCL, PyramidFeatureHistogram)
 {
   // Create shared pointers
-   PointCloud<PointXYZ>::Ptr cloud_source_ptr = cloud_source.makeShared (),
-       cloud_target_ptr = cloud_target.makeShared ();
+  PointCloud<PointXYZ>::Ptr cloud_source_ptr = cloud_source.makeShared ();
+  PointCloud<PointXYZ>::Ptr cloud_target_ptr = cloud_target.makeShared ();
 
-  PointCloud<Normal>::Ptr cloud_source_normals (new PointCloud<Normal> ()),
-      cloud_target_normals (new PointCloud<Normal> ());
   search::KdTree<PointXYZ>::Ptr tree (new search::KdTree<PointXYZ>);
   NormalEstimation<PointXYZ, Normal> normal_estimator;
   normal_estimator.setSearchMethod (tree);
   normal_estimator.setRadiusSearch (0.05);
+
+  PointCloud<Normal>::Ptr cloud_source_normals (new PointCloud<Normal>());
   normal_estimator.setInputCloud (cloud_source_ptr);
   normal_estimator.compute (*cloud_source_normals);
 
+  PointCloud<Normal>::Ptr cloud_target_normals (new PointCloud<Normal>());
   normal_estimator.setInputCloud (cloud_target_ptr);
   normal_estimator.compute (*cloud_target_normals);
 
 
-  PointCloud<PPFSignature>::Ptr ppf_signature_source (new PointCloud<PPFSignature> ()),
-      ppf_signature_target (new PointCloud<PPFSignature> ());
+  PointCloud<PPFSignature>::Ptr ppf_signature_source(new PointCloud<PPFSignature>());
   PPFEstimation<PointXYZ, Normal, PPFSignature> ppf_estimator;
   ppf_estimator.setInputCloud (cloud_source_ptr);
   ppf_estimator.setInputNormals (cloud_source_normals);
   ppf_estimator.compute (*ppf_signature_source);
 
+  PointCloud<PPFSignature>::Ptr ppf_signature_target(new PointCloud<PPFSignature>());
   ppf_estimator.setInputCloud (cloud_target_ptr);
   ppf_estimator.setInputNormals (cloud_target_normals);
   ppf_estimator.compute (*ppf_signature_target);
 
 
   vector<pair<float, float> > dim_range_input, dim_range_target;
-  for (size_t i = 0; i < 3; ++i) dim_range_input.push_back (pair<float, float> (static_cast<float> (-M_PI), static_cast<float> (M_PI)));
+  for (size_t i = 0; i < 3; ++i)
+      dim_range_input.push_back (pair<float, float> (static_cast<float> (-M_PI), static_cast<float> (M_PI)));
   dim_range_input.push_back (pair<float, float> (0.0f, 1.0f));
-  for (size_t i = 0; i < 3; ++i) dim_range_target.push_back (pair<float, float> (static_cast<float> (-M_PI) * 10.0f, static_cast<float> (M_PI) * 10.0f));
+  for (size_t i = 0; i < 3; ++i)
+      dim_range_target.push_back (pair<float, float> (static_cast<float> (-M_PI) * 10.0f, static_cast<float> (M_PI) * 10.0f));
   dim_range_target.push_back (pair<float, float> (0.0f, 50.0f));
 
 
-  PyramidFeatureHistogram<PPFSignature>::Ptr pyramid_source (new PyramidFeatureHistogram<PPFSignature> ()),
-      pyramid_target (new PyramidFeatureHistogram<PPFSignature> ());
+  PyramidFeatureHistogram<PPFSignature>::Ptr pyramid_source(new PyramidFeatureHistogram<PPFSignature>());
   pyramid_source->setInputCloud (ppf_signature_source);
   pyramid_source->setInputDimensionRange (dim_range_input);
   pyramid_source->setTargetDimensionRange (dim_range_target);
   pyramid_source->compute ();
 
+  PyramidFeatureHistogram<PPFSignature>::Ptr pyramid_target(new PyramidFeatureHistogram<PPFSignature>());
   pyramid_target->setInputCloud (ppf_signature_target);
   pyramid_target->setInputDimensionRange (dim_range_input);
   pyramid_target->setTargetDimensionRange (dim_range_target);
@@ -876,8 +880,9 @@ TEST (PCL, PyramidFeatureHistogram)
   EXPECT_NEAR (similarity_value, 0.74101555347442627, 1e-4);
 
   vector<pair<float, float> > dim_range_target2;
-  for (size_t i = 0; i < 3; ++i) dim_range_target2.push_back (pair<float, float> (static_cast<float> (-M_PI) * 5.0f, static_cast<float> (M_PI) * 5.0f));
-    dim_range_target2.push_back (pair<float, float> (0.0f, 20.0f));
+  for (size_t i = 0; i < 3; ++i)
+    dim_range_target2.push_back (pair<float, float> (static_cast<float> (-M_PI) * 5.0f, static_cast<float> (M_PI) * 5.0f));
+  dim_range_target2.push_back (pair<float, float> (0.0f, 20.0f));
 
   pyramid_source->setTargetDimensionRange (dim_range_target2);
   pyramid_source->compute ();
@@ -890,7 +895,8 @@ TEST (PCL, PyramidFeatureHistogram)
 
 
   vector<pair<float, float> > dim_range_target3;
-  for (size_t i = 0; i < 3; ++i) dim_range_target3.push_back (pair<float, float> (static_cast<float> (-M_PI) * 2.0f, static_cast<float> (M_PI) * 2.0f));
+  for (size_t i = 0; i < 3; ++i)
+    dim_range_target3.push_back (pair<float, float> (static_cast<float> (-M_PI) * 2.0f, static_cast<float> (M_PI) * 2.0f));
   dim_range_target3.push_back (pair<float, float> (0.0f, 10.0f));
 
   pyramid_source->setTargetDimensionRange (dim_range_target3);
